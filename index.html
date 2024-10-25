@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Search Bar Styling */
+        .search-bar {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Story List Styling */
+        .search-results {
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .story-item {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .story-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .story-author {
+            font-size: 14px;
+            color: #777;
+        }
+
+        #noStoriesMessage {
+            text-align: center;
+            font-size: 16px;
+            color: #888;
+            margin-top: 20px;
+        }
+
+        /* Add Story Button Styling */
+        .add-story-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 24px;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .add-story-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search for stories or users...">
+    </div>
+
+    <!-- Story List -->
+    <div id="searchResults" class="search-results"></div>
+    <div id="noStoriesMessage">No stories yet. Be the first to publish one!</div>
+
+    <!-- Add Story Button -->
+    <button class="add-story-button" onclick="addNewStory()">+</button>
+
+    <script>
+        // Load and display stories on page load
+        function loadStories() {
+            const stories = JSON.parse(localStorage.getItem("stories")) || [];
+            const searchResults = document.getElementById("searchResults");
+            const noStoriesMessage = document.getElementById("noStoriesMessage");
+
+            searchResults.innerHTML = ""; // Clear previous stories
+
+            if (stories.length === 0) {
+                noStoriesMessage.style.display = "block";
+            } else {
+                noStoriesMessage.style.display = "none";
+                stories.forEach((story, index) => { // Use index to identify story
+                    const storyItem = document.createElement("div");
+                    storyItem.classList.add("story-item");
+                    storyItem.innerHTML = `
+                        <div class="story-title">${story.title}</div>
+                        <div class="story-author">Anonymous Author</div>
+                    `;
+                    storyItem.onclick = () => openStory(index); // Pass index
+                    searchResults.appendChild(storyItem);
+                });
+            }
+        }
+
+        // Redirect to the new story creation page
+        function addNewStory() {
+            window.location.href = "new-story.html";
+        }
+
+        // Open a selected story in read-only mode
+        function openStory(index) {
+            localStorage.setItem("selectedStoryIndex", index); // Store index instead of title
+            window.location.href = "story-view.html"; // Navigate to story view
+        }
+
+        // Search functionality
+        document.getElementById("searchInput").addEventListener("input", function() {
+            const searchTerm = this.value.toLowerCase();
+            const stories = document.querySelectorAll(".story-item");
+            stories.forEach(story => {
+                const title = story.querySelector(".story-title").textContent.toLowerCase();
+                story.style.display = title.includes(searchTerm) ? "block" : "none";
+            });
+        });
+
+        // Load stories when the page loads
+        window.onload = loadStories;
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Story</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+        }
+        .chat-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .chat-message {
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            background-color: #e0f7fa;
+            align-self: flex-start;
+            width: fit-content;
+            max-width: 70%;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            background-color: #fff;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        .send-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .send-btn:hover {
+            background-color: #45a049;
+        }
+        .publish-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196f3;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .publish-btn:hover {
+            background-color: #1e88e5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container" id="chatContainer">
+    <div class="chat-message" id="firstMessage">Enter your story title as the first message</div>
+</div>
+
+<div class="input-container">
+    <input type="text" id="messageInput" placeholder="Type here...">
+    <button class="send-btn" onclick="sendMessage()">Send</button>
+</div>
+
+<button class="publish-btn" onclick="publishStory()">Publish</button>
+
+<script>
+    let storyTitle = '';
+    let storyMessages = [];
+
+    // Function to send a new message
+    function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const chatContainer = document.getElementById("chatContainer");
+        const messageText = input.value.trim();
+
+        if (messageText) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("chat-message");
+
+            // Set the first message as the story title
+            if (!storyTitle) {
+                storyTitle = messageText;
+                messageElement.innerHTML = `<strong>${messageText}</strong>`;
+            } else {
+                storyMessages.push(messageText);
+                messageElement.textContent = messageText;
+            }
+
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            input.value = '';
+        }
+    }
+
+    // Function to publish the story
+    function publishStory() {
+        if (!storyTitle) {
+            alert("Please enter a story title as the first message.");
+            return;
+        }
+
+        // Store the story in localStorage
+        const stories = JSON.parse(localStorage.getItem("stories")) || [];
+        stories.push({
+            title: storyTitle,
+            content: storyMessages,
+        });
+        localStorage.setItem("stories", JSON.stringify(stories));
+
+        // Redirect back to the main page
+        window.location.href = "index.html"; // Ensure this path is correct based on your project structure
+    }
+
+    // Add event listener to input for Enter key
+    document.getElementById("messageInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage(); // Call sendMessage on Enter key press
+        }
+    });
+</script>
+
+</body>
+</html>
